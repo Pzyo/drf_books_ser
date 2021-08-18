@@ -2,6 +2,19 @@
 from rest_framework import serializers
 from api import models
 
+# 写一个类, serializers.ListSerializer
+class BookListSerializer(serializers.ListSerializer):
+    # def create(self, validated_data):
+    #     print(validated_data)
+    #     return super().create(validated_data)
+
+    def update(self, instance, validated_data):
+        print(instance)
+        print(validated_data)
+        # self.child是BookModelSerializer对象
+        return [
+            self.child.update(instance[i], attrs) for i, attrs in enumerate(validated_data)
+        ]
 
 # 如果序列化的是数据库的表, 尽量使用ModelSerializer
 class BookModelSerializer(serializers.ModelSerializer):
@@ -11,6 +24,7 @@ class BookModelSerializer(serializers.ModelSerializer):
     # 在models表模型写方法
 
     class Meta:
+        list_serializer_class = BookListSerializer
         model = models.Book
         # fields = '__all__'
         # depth = 0
